@@ -12,6 +12,7 @@ package main
 import (
 	"fmt"
     "gopl.io/ch5/links"
+    "log"
 )
 var tokens = make(chan struct{}, 20)
 
@@ -21,14 +22,16 @@ var seen = make(map[string]bool)
 func crawl(url string, depth int) {
 	fmt.Println(url)
     tokens <- struct{}{} // acquire a token
-    var list []string
-	list:=links.Extract(url)
+    list, err:=links.Extract(url)
      <-tokens
     for i:=0; i<len(list)&&depth>0; i++{
         if !seen[list[i]]{
             crawl(list[i], depth-1)
         }
     }
+    if err != nil {
+		log.Print(err)
+	}
     return
 }
 
